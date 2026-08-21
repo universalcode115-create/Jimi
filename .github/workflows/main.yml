@@ -29,10 +29,10 @@ jobs:
 
       - name: Check V10 files
         run: |
-          test -f model/v10/v10_intent_model.tflite
-          test -f model/v10/v10_vocabulary.json
-          test -f model/v10/v10_labels.json
-          test -f model/v10/v10_config.json
+          test -f app/src/v10_intent_model.tflite
+          test -f app/src/v10_vocabulary.json
+          test -f app/src/v10_labels.json
+          test -f app/src/v10_config.json
           echo "All V10 files found successfully."
 
       - name: Test TFLite model
@@ -40,12 +40,11 @@ jobs:
           python - <<'PY'
           import tensorflow as tf
           import json
-          import os
 
-          model_path = "model/v10/v10_intent_model.tflite"
-          vocab_path = "model/v10/v10_vocabulary.json"
-          labels_path = "model/v10/v10_labels.json"
-          config_path = "model/v10/v10_config.json"
+          model_path = "app/src/v10_intent_model.tflite"
+          vocab_path = "app/src/v10_vocabulary.json"
+          labels_path = "app/src/v10_labels.json"
+          config_path = "app/src/v10_config.json"
 
           print("Loading V10 model...")
 
