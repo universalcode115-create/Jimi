@@ -1,7 +1,21 @@
-plugins { id 'com.android.application' }
-
-android { namespace 'com.v10.intenttester'; compileSdk 35
-    defaultConfig { applicationId 'com.v10.intenttester'; minSdk 23; targetSdk 35; versionCode 1; versionName '1.0' }
+plugins {
+    id 'com.android.application'
 }
 
-dependencies { implementation 'org.tensorflow:tensorflow-lite:2.14.0' }
+android {
+    namespace 'com.v10.intenttester'
+    compileSdk 35
+
+    defaultConfig {
+        applicationId 'com.v10.intenttester'
+        minSdk 23
+        targetSdk 35
+
+        versionCode 1
+        versionName '1.0'
+    }
+}
+
+dependencies {
+    implementation 'org.tensorflow:tensorflow-lite:2.14.0'
+}
