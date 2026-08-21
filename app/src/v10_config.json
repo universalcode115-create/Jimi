@@ -1,0 +1,20 @@
+{
+  "version": "V10",
+  "max_len": 10,
+  "vocab_size": 207,
+  "labels": [
+    "Greeting",
+    "HowAreYou",
+    "Goodbye",
+    "Thanks",
+    "Name",
+    "WhoAreYou",
+    "Help",
+    "Yes",
+    "No",
+    "Time",
+    "Weather",
+    "Unknown"
+  ],
+  "unknown_threshold": 0.6
+}
