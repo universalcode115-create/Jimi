@@ -1,4 +1,4 @@
-name: V10 Android APK Build
+name: V10 Intent Model
 
 on:
   push:
@@ -10,49 +10,79 @@ on:
   workflow_dispatch:
 
 jobs:
-  build-apk:
+  test-v10:
     runs-on: ubuntu-latest
 
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Set up Java
-        uses: actions/setup-java@v4
+      - name: Set up Python
+        uses: actions/setup-python@v5
         with:
-          distribution: temurin
-          java-version: "17"
+          python-version: "3.11"
 
-      - name: Set up Gradle
-        uses: gradle/actions/setup-gradle@v4
-        with:
-          gradle-version: "8.7"
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install tensorflow numpy
 
       - name: Check V10 files
         run: |
-          test -f app/src/v10_intent_model.tflite
-          test -f app/src/v10_vocabulary.json
-          test -f app/src/v10_labels.json
-          test -f app/src/v10_config.json
+          test -f model/v10/v10_intent_model.tflite
+          test -f model/v10/v10_vocabulary.json
+          test -f model/v10/v10_labels.json
+          test -f model/v10/v10_config.json
           echo "All V10 files found successfully."
 
-      - name: Show project structure
+      - name: Test TFLite model
         run: |
-          echo "Project files:"
-          find . -maxdepth 4 -type f | sort
+          python - <<'PY'
+          import tensorflow as tf
+          import json
 
-      - name: Build Debug APK
-        run: |
-          gradle assembleDebug --stacktrace
+          model_path = "model/v10/v10_intent_model.tflite"
+          vocab_path = "model/v10/v10_vocabulary.json"
+          labels_path = "model/v10/v10_labels.json"
+          config_path = "model/v10/v10_config.json"
 
-      - name: Find APK
-        run: |
-          echo "APK files:"
-          find app/build/outputs/apk -type f -name "*.apk" -print
+          print("Loading V10 model...")
 
-      - name: Upload APK
+          interpreter = tf.lite.Interpreter(model_path=model_path)
+          interpreter.allocate_tensors()
+
+          inputs = interpreter.get_input_details()
+          outputs = interpreter.get_output_details()
+
+          print("Input:", inputs)
+          print("Output:", outputs)
+
+          with open(vocab_path, "r", encoding="utf-8") as f:
+              vocabulary = json.load(f)
+
+          with open(labels_path, "r", encoding="utf-8") as f:
+              labels = json.load(f)
+
+          with open(config_path, "r", encoding="utf-8") as f:
+              config = json.load(f)
+
+          print("Vocabulary loaded:", len(vocabulary))
+          print("Labels loaded:", labels)
+          print("Config loaded successfully.")
+
+          assert len(inputs) == 1
+          assert len(outputs) == 1
+
+          print("V10 TFLite validation PASSED!")
+          PY
+
+      - name: Upload V10 model
         uses: actions/upload-artifact@v4
         with:
-          name: Jimi-V10-debug-APK
-          path: app/build/outputs/apk/**/*.apk
-          if-no-files-found: error
+          name: V10-model
+          path: |
+            model/v10/v10_intent_model.tflite
+            model/v10/v10_vocabulary.json
+            model/v10/v10_labels.json
+            model/v10/v10_config.json
+          retention-days: 30
